@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading;
+using UnityEngine;
 
 public class WaterCannonController : MonoBehaviour
 {
@@ -13,7 +14,9 @@ public class WaterCannonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Vector3 curVect = gameObject.transform.localScale;
+        curVect.z *= 1.01f;
+        gameObject.transform.localScale = curVect;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
