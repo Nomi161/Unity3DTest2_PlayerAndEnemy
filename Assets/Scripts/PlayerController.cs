@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -48,9 +49,10 @@ public class PlayerController : MonoBehaviour
         //if (!(GameManager.gameState == GameState.playing ||
         //    GameManager.gameState == GameState.ending)) return;
 
-        Move();                 // 前後左右の入力値の取得
+        GetMoveInfo();                 // 前後左右の入力値の取得
         angleZ = GetAngle();    // その時の角度を変数angleZに反映
-        Animation();            // angleZを利用してアニメーション
+        MoveByKey();
+            //        Animation();            // angleZを利用してアニメーション
     }
 
     public GameObject waterCannonPrefab;    // Instatiate生成する対象オブジェクト
@@ -85,7 +87,7 @@ public class PlayerController : MonoBehaviour
         //return;
         //}
         // プレイヤーの向きを敵に向ける
-        LookAt();
+//!!!        LookAt();
 
         // 入力状況に応じてPlayerを動かす
         if (axisH != 0 || axisV != 0)
@@ -98,31 +100,55 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// プレイヤーの向きを敵に向ける
+    /// キー入力による左右回転と前後左右への移動 
     /// </summary>
-    private void LookAt()
+    private void MoveByKey()
     {
-        //// ターゲットの方向への回転
-        //var lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
-        // 回転補正
-        //Vector3 _forward = Vector3.forward;
-        //var offsetRotation = Quaternion.FromToRotation(_forward, Vector3.forward);
-        //// 回転補正→ターゲット方向への回転の順に、自身の向きを操作する
-        //transform.rotation = lookAtRotation * offsetRotation;
-        enemy = GameObject.FindGameObjectWithTag("Enemy");  // 敵情報を得る
-        Vector3 currentPosition = transform.position;       // 自身の位置情報を得る
-//        Debug.Log($"Before x={currentPosition.x} y={currentPosition.y} z={currentPosition.z}");
+        // (右回転)
+        if ( Input.GetKey(KeyCode.Q) )
+        {
+            Debug.Log("右回転");
 
-        transform.LookAt(enemy.transform);                  // 敵に向きを変える
-        Vector3 newPosition = transform.position;       // 自身の位置情報を得る
-//        Debug.Log($"after x={newPosition.x} y={newPosition.y} z={newPosition.z}");
-        transform.position = currentPosition;               // 自身の位置をもとに戻す
+//            transform.Rotate(new Vector3(0, -90,0) * Time.deltaTime);
+            transform.Rotate(new Vector3(0, -45, 0) * Time.deltaTime);
+        }
+        // (左回転)
+        else if (Input.GetKey(KeyCode.E))
+        {
+            Debug.Log("左回転");
+//            transform.Rotate(new Vector3(0, 90, 0) * Time.deltaTime);
+            transform.Rotate(new Vector3(0, 45, 0) * Time.deltaTime);
 
+        }
+        // Wキー(前方移動)
+        else if (Input.GetKey(KeyCode.W))
+        {
+            transform.position += playerSpeed * transform.forward * Time.deltaTime;
+        }
+        // Sキー(後方移動)
+        else if (Input.GetKey(KeyCode.S))
+        {
+            transform.position -= playerSpeed * transform.forward * Time.deltaTime;
+        }
+        // Dキー(右移動)
+        else if (Input.GetKey(KeyCode.D))
+        {
+            Debug.Log("右移動");
+            transform.position += playerSpeed * transform.right * Time.deltaTime;
+        }
+        // Aキー(左移動)
+        else if (Input.GetKey(KeyCode.A))
+        {
+            Debug.Log("左移動");
+            transform.position -= playerSpeed * transform.right * Time.deltaTime;
+        }
 
     }
 
-    // 前後左右の入力値の取得
-    private void Move()
+    /// <summary>
+    /// 前後左右の入力値の取得 
+    /// </summary>
+    private void GetMoveInfo()
     {
         //if (!isViartual)    // ヴァーチャルパッドを触っていないのであれば
         //{
